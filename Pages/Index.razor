@@ -14,18 +14,25 @@
 <MudGrid>
     <MudItem xs="12" sm="8" Class="mx-auto">
         <MudTable Items="@Fights" Loading="isLoading">
+            <NoRecordsContent>
+                <MudTd>Nothing to see yet!</MudTd>                
+            </NoRecordsContent>
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<Fight, object>(x => x.Created)">
                         Date
                     </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
                     <MudTableSortLabel SortBy="new Func<Fight, object>(x => x.Name!)">
                         Name
                     </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
                     <MudTableSortLabel SortBy="new Func<Fight, List<Contender>>(x => x.Contenders!)">
                         Combatants
                     </MudTableSortLabel>
-                </MudTh>
+                </MudTh>                
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Date">@context.Created.ToShortDateString()</MudTd>

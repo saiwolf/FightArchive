@@ -1,0 +1,69 @@
+﻿@using FightArchive.Data
+@using FightArchive.Data.Entities
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Add Contender</PageTitle>
+
+<EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmitAsync">
+    <DataAnnotationsValidator />
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="12" sm="8" Class="mx-auto">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Align="Align.Center">Add Fighter</MudText>
+                    <MudTextField
+                        Label="Character Name"
+                        @bind-Value="contender!.Name"
+                        For="@(() => contender!.Name)"
+                        HelperText="Name of your fighter."/>
+                    <MudTextField
+                        Label="Character Profile URL"
+                        @bind-Value="contender!.ProfileUrl"
+                        For="@(() => contender.ProfileUrl)"
+                        InputType="InputType.Url"
+                        HelperText="Profile URL. Doesn't have to be F-List."
+                    />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton
+                        ButtonType="ButtonType.Submit"
+                        Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        FullWidth>
+                    Create
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+
+@code {
+    [Inject]
+    public IDbContextFactory<DataContext>? DbFactory { get; set; }
+
+    [Inject]
+    public NavigationManager? NavigationManager { get; set; }
+
+    [Inject]
+    public ISnackbar? SnackbarService { get; set; }
+
+    private Contender? contender;
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        contender = new();
+        editContext = new(contender);
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        using DataContext dbContext = await DbFactory!.CreateDbContextAsync();
+        dbContext.Contenders!.Add(contender!);
+        await dbContext.SaveChangesAsync();
+        SnackbarService!.Add("Added new fighter!", Severity.Success);
+        NavigationManager!.NavigateTo("/");
+    }
+}
