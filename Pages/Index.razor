@@ -1,0 +1,85 @@
+﻿@page "/"
+@using FightArchive.Data
+@using FightArchive.Data.Entities
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<DataContext> DbFactory
+@inject ISnackbar Snackbar
+
+<PageTitle>Index</PageTitle>
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h3" Align="Align.Center">Select Your Fighter!</MudText>
+    </MudItem>
+</MudGrid>
+<MudGrid>
+    <MudItem xs="12" sm="8" Class="mx-auto">
+        <MudTable Items="@Fights" Loading="isLoading">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<Fight, object>(x => x.Created)">
+                        Date
+                    </MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<Fight, object>(x => x.Name!)">
+                        Name
+                    </MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<Fight, List<Contender>>(x => x.Contenders!)">
+                        Combatants
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Date">@context.Created.ToShortDateString()</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Combatants">
+                    @FormatCombatants(context.Contenders!)
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+
+@code {
+    private string? combatant;
+    private bool showTable = false;
+    private bool isLoading = true;
+    public List<Fight>? Fights { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            using DataContext dbContext = DbFactory.CreateDbContext();
+            List<Fight>? fights = await dbContext.Fights!
+                .Include(i => i.Contenders)
+                .ToListAsync();
+            if (fights is null || !fights.Any())
+                Fights = new();
+            else
+                Fights = fights;
+            isLoading = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            throw;
+        }
+    }
+
+    public string FormatCombatants(List<Contender> contenders)
+    {
+        System.Text.StringBuilder sb = new();
+        @if (contenders is not null && contenders.Any())
+        {
+            @foreach (var contender in contenders)
+            {
+                if (contender == contenders.Last())
+                    sb.Append(contender.Name!);
+                else
+                    sb.Append($"{contender.Name}, ");
+            }
+        }
+        return sb.ToString();
+    }
+}

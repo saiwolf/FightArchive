@@ -1,0 +1,38 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider IsDarkMode="true" Theme="_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>    
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">The Forbidden Land's Fight Archive</MudText>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Docked" Elevation="2">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer Fixed Class="mt-5">
+            @Body
+        </MudContainer>
+    </MudMainContent>    
+</MudLayout>
+@code {
+    bool _drawerOpen = true;
+    private MudTheme _theme = new();
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _theme.PaletteDark.Primary = Colors.LightBlue.Default;
+        _theme.PaletteDark.TextPrimary = Colors.Grey.Lighten2;
+        _theme.PaletteDark.Secondary = Colors.Red.Lighten3;       
+        
+        base.OnParametersSet();
+    }
+}
