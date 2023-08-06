@@ -22,7 +22,7 @@ try
         .ReadFrom.Configuration(ctx.Configuration));
 
     // Add services to the container.
-    services.AddRazorPages();
+    services.AddRazorPages().AddNewtonsoftJson();
     services.AddServerSideBlazor();
     services.AddMudServices(config =>
     {
