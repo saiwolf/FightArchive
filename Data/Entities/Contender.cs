@@ -11,4 +11,7 @@ public class Contender : BaseEntity
     public string? ProfileUrl { get; set; }
 
     public List<Fight>? Fights { get; set; }
+
+    public Guid AccountId { get; set; }
+    public Account? Account { get; set; }
 }

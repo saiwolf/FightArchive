@@ -39,6 +39,10 @@ public class DataContext : DbContext
     /// </summary>
     public DbSet<Contender>? Contenders { get; set; }
 
+    public DbSet<Account>? Accounts { get; set; }
+
+    public DbSet<Role>? Roles { get; set; }
+
     /// <summary>
     /// Define the model.
     /// </summary>
@@ -53,9 +57,29 @@ public class DataContext : DbContext
             .Property<byte[]>(RowVersion)
             .IsRowVersion();
 
+        modelBuilder.Entity<Account>()
+            .Property<byte[]>(RowVersion)
+            .IsRowVersion();
+
+        modelBuilder.Entity<Role>()
+            .Property<byte[]>(RowVersion)
+            .IsRowVersion();
+
         modelBuilder.Entity<Fight>()
             .HasMany(m => m.Contenders)
             .WithMany(w => w.Fights);
+
+        modelBuilder.Entity<Contender>()
+            .HasOne(h => h.Account)
+            .WithMany(w => w.Characters);
+
+        modelBuilder.Entity<Account>()
+            .HasOne(h => h.Role)
+            .WithMany(w => w.Accounts);
+
+        modelBuilder.Entity<Account>()
+            .HasIndex(i => i.Email)
+            .IsUnique();
 
         base.OnModelCreating(modelBuilder);
     }

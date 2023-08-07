@@ -1,5 +1,7 @@
 using FightArchive.Data;
 using FightArchive.Helpers;
+using FightArchive.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor;
@@ -40,6 +42,13 @@ try
     });
 
     services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+    services.AddScoped<AccountService>();
+    services.AddScoped<FightArchiveAuthenticationStateProvider>();
+    services.AddScoped<AuthenticationStateProvider>(sp =>    
+        sp.GetRequiredService<FightArchiveAuthenticationStateProvider>()
+    );
+    services.AddAuthenticationCore();
 
     WebApplication app = builder.Build();
 
