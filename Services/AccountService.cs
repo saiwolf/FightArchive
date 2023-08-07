@@ -69,9 +69,10 @@ public class AccountService
         return tokenHandler.WriteToken(token);
     }
 
-    public async Task PersistAccountToStorageAsync(Account account)
+    public async Task PersistAccountToStorageAsync(AccountStorage accountStorage)
     {
-        string json = JsonConvert.SerializeObject(account);
+        accountStorage.Token = GenerateAccountToken(accountStorage);
+        string json = JsonConvert.SerializeObject(accountStorage);
         await _protectedLocalStorage.SetAsync(storageKey, json);
     }
 
